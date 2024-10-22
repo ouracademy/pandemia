@@ -25,10 +25,10 @@ if uploaded_file is not None:
   # pred = model.predict_proba(df)
   # pred = pd.DataFrame(pred, columns = ['setosa_probability', 'versicolor_probability', 'virginica_probability'])
   pred = dataframe # TODO: delete this
-  st.header('Predicted values')
+  st.header('Valores predecidos')
   st.write(pred.head())
   pred = pred.to_csv(index=False).encode('utf-8')
-  st.download_button('Download prediction',
+  st.download_button('Descargar predicción',
                   pred,
                   'prediction.csv',
                   'text/csv',
