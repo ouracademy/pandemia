@@ -4,7 +4,7 @@ import pandas as pd
 st.title("Modelo para pandemia COVID 19")
 
 with st.sidebar:
-    st.write("Requirimientos de datos")
+    st.write("Requerimientos de datos")
     st.caption("Para inferir el modelo, debe cargar un archivo en formato csv con las siguientes columnas")
     with st.expander("Formato de datos"):
       st.markdown("- Deaths (Muertos)")
