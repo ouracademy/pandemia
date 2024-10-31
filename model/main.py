@@ -5,19 +5,14 @@ from sklearn.impute import SimpleImputer
 df_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSaudita.csv", sep=',')
 
 def corregir_tested_incorrecto(v):
-  c = 0               #contador de tested negativos
   x = 0     # promedio de tested
 
   for i in range (0, len(v)):
     if v[i] <0:             #si la Tested es negativo
       v[i]= x
-      c=c+1    #aumenta el contador
-  
-  return c
 
 tested = df_positivos['Tested']
-nro_valores_corregidos = corregir_tested_incorrecto(tested)
-print('N° de valores negativos reemplazados =', nro_valores_corregidos)
+corregir_tested_incorrecto(tested)
 
 df_positivos.to_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepurado.csv", sep=',')
 
