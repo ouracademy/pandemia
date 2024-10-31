@@ -1,12 +1,12 @@
 import pandas as pd
 
-"""#### DATASET: Se utilizará el data set de casos de Covid en Arabia Saudita tomado de https://kaggle.com"""
+# """#### DATASET: Se utilizará el data set de casos de Covid en Arabia Saudita tomado de https://kaggle.com"""
 
 df_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSaudita.csv", sep=',')
 
 #En el caso de las Tested incorrectos se reemplazarán con el promedio
-prom= df_positivos['Tested'].mean()  # prom aprox = 1
-prom
+# prom= df_positivos['Tested'].mean()  # prom aprox = 1
+# prom
 
 def corregir_tested_incorrecto(v):
   c = 0               #contador de tested negativos
