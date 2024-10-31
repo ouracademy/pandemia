@@ -24,46 +24,21 @@
 
 import numpy as np
 import pandas as pd
-# import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
-# from sklearn.svm import SVR
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
-# from sklearn.naive_bayes import MultinomialNB
-# from keras.models import Sequential
-# from keras.layers import LSTM, Dense, Embedding, Conv1D, MaxPooling1D, Flatten
-# from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-# from sklearn.preprocessing import StandardScaler
-# import tensorflow as tf
-# from tensorflow import keras
-# from tensorflow.keras.layers import Input, Flatten, Dense
-# from tensorflow.keras.models import Model
-# from sklearn.metrics import classification_report
 from sklearn.metrics import roc_auc_score, roc_curve, auc,accuracy_score, precision_score, recall_score, f1_score, mean_squared_error
 from sklearn.metrics import accuracy_score #, confusion_matrix, classification_report
-# from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
-# from keras.models import Sequential
-# from keras.layers import LSTM, Dense
-# from keras.utils import to_categorical
-# from keras.layers import SimpleRNN
 from sklearn.naive_bayes import GaussianNB
-# import lime
-# import lime.lime_tabular
-# from lime import submodular_pick
 from sklearn.preprocessing import label_binarize
 
-# from google.colab import drive
-# drive.mount('/content/drive')
 
 data = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepuradoEncoded.csv",sep=",")
-
-# df1_positivos.info()
-# df1_positivos
 
 data['Confirmed_entero'] = data['Confirmed'].astype(int)
 
@@ -76,32 +51,25 @@ y = data['Confirmed_entero']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 # Entrenar modelos individuales
-## Entrena un modelo RF
 rf_model = RandomForestClassifier()
 rf_model.fit(X_train, y_train)
 
-# Entrena un modelo SVM
 svm_model = SVC()
 svm_model.fit(X_train, y_train)
 
-# Entrena un modelo GBM
 gbm_model = GradientBoostingClassifier()
 gbm_model.fit(X_train, y_train)
 
-# Entrena un modelo Naive Bayes
-# Crear el clasificador Naïve Bayes
 naive_bayes = GaussianNB()
-#nb_classifier = MultinomialNB()
 naive_bayes.fit(X_train, y_train)
 
-# Entrena un modelo DT
 dt_model = DecisionTreeClassifier()
 dt_model.fit(X_train, y_train)
 
-# Entrena el modelo XGBoost
 unique_classes = np.unique(y_train)
 print("Clases únicas en y_train:", unique_classes)
 # Obtener un mapeo de las clases originales a las nuevas clases consecutivas
+
 class_mapping = {original_class: new_class for new_class, original_class in enumerate(unique_classes)}
 # Aplicar el mapeo a las etiquetas de entrenamiento
 y_train_consecutive = np.array([class_mapping[cls] for cls in y_train])
@@ -109,7 +77,6 @@ y_train_consecutive = np.array([class_mapping[cls] for cls in y_train])
 xgb_model = xgb.XGBClassifier()
 xgb_model.fit(X_train, y_train_consecutive)
 
-# Crear y ajustar un modelo de regresión logística
 lr_model = LogisticRegression(max_iter=10000)
 lr_model.fit(X_train, y_train)
 
@@ -122,77 +89,10 @@ dt_predictions = dt_model.predict(X_test)
 xgb_predictions = xgb_model.predict(X_test)
 lr_predictions = lr_model.predict(X_test)
 
-# Crear un explicador LIME
-# explainer = lime.lime_tabular.LimeTabularExplainer(
-#     training_data=X_train.values,
-#     feature_names=X_train.columns,
-#     class_names=['Confirmed_entero'],
-#     mode='classification'
-# )
-
-# def explain_prediction_with_interpretation(model, instance, model_name):
-#     # Verificarsi el modelo tiene predict_proba, si no, use decision_function si está disponible
-#     if hasattr(model, 'predict_proba'):
-#         predict_fn = model.predict_proba
-#     elif hasattr(model, 'decision_function'):
-#         predict_fn = model.decision_function  # Utilizar decision_function como alternativa
-#     else:
-#         print(f"Advertencia: {model_name} No tiene predict_proba ni decision_function. Omitimos la explicación.")
-#         return  # Omitir la explicación si ningún método está disponible
-
-#     explanation = explainer.explain_instance(
-#         data_row=instance,
-#         predict_fn=predict_fn,
-#         num_features=5  # Número de características a explicar
-#     )
-
-#     print(f"Explicación para el modelo {model_name}:")
-#     # Mostrar el diagrama
-#     explanation.show_in_notebook(show_table=True, show_all=False)
-
-#     # Obtener las principales características y sus pesos
-#     features = explanation.as_list()
-
-#     # Interpretar los resultados
-#     interpretation = f"Para este caso, de {model_name} la predicción del modelo está influenciada principalmente por: \n"
-#     for feature, weight in features:
-#         interpretation += f"{feature} ({'positivamente' if weight > 0 else 'negativamente'}) "
-
-#     print(interpretation)
-
-# Explicar las predicciones para una instancia específica de X_test (por ejemplo, la primera instancia)
-# instance_to_explain = X_test.iloc[0].values
-
-# explain_prediction_with_interpretation(rf_model, instance_to_explain, "Random Forest")
-# explain_prediction_with_interpretation(svm_model, instance_to_explain, "SVM")
-# explain_prediction_with_interpretation(gbm_model, instance_to_explain, "Gradient Boosting")
-# explain_prediction_with_interpretation(naive_bayes, instance_to_explain, "Naive Bayes")
-# explain_prediction_with_interpretation(dt_model, instance_to_explain, "Decision Tree")
-# explain_prediction_with_interpretation(xgb_model, instance_to_explain, "XGBoost")
-# explain_prediction_with_interpretation(lr_model, instance_to_explain, "Logistic Regression")
-
 # Combina las salidas de los 7 modelos y utiliza una capa LSTM
 combined_features = np.hstack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
                                nb_predictions.reshape(-1, 1), dt_predictions.reshape(-1, 1),
                                xgb_predictions.reshape(-1, 1),lr_predictions.reshape(-1, 1)))
-
-# lstm_model = Sequential()
-# lstm_model.add(LSTM(32, input_shape=(7, 1)))  # La entrada es la salida combinada de los 7 modelos   3
-# lstm_model.add(Dense(1, activation='sigmoid'))
-# lstm_model.compile(optimizer='adam', loss='binary_crossentropy')
-
-# Entrena la capa LSTM con las salidas combinadas de los tres modelos
-# lstm_model.fit(combined_features, y_test, epochs=10)   # y_train
-
-# Realizar predicciones en el conjunto de prueba
-# y_pred = lstm_model.predict(combined_features)
-
-# Calcular el Error Cuadrático Medio (MSE)
-# mse = mean_squared_error(y_test, y_pred)
-# Calcular el Error Cuadrático Medio Raíz (RMSE)
-# rmse = np.sqrt(mse)
-# print(f'MSE: {mse}')
-# print(f'RMSE: {rmse}')
 
 #Se utiliza las salidas de los 7 algoritmos  como entrada para un clasificador SVM
 svm_input = np.column_stack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
@@ -241,34 +141,3 @@ for i in range(n_classes):
 # Calcular la curva ROC micropromedio y el área ROC
 fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
 roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-
-# Graficar todas las curvas ROC
-# plt.figure()
-# plt.plot(
-#     fpr["micro"],
-#     tpr["micro"],
-#     label="curva ROC micropromedio (area = {0:0.2f})".format(roc_auc["micro"]),
-#     color="deeppink",
-#     linestyle=":",
-#     linewidth=4,
-# )
-
-# Graficar curvas ROC para cada clase
-# colors = ["aqua", "darkorange", "cornflowerblue"]  # Añadir más colores si es necesario.
-# for i, color in zip(range(n_classes), colors):
-#     plt.plot(
-#         fpr[i],
-#         tpr[i],
-#         color=color,
-#         lw=2,
-#         label="Curva ROC de clase {0} (area = {1:0.2f})".format(i, roc_auc[i]),
-#     )
-
-# plt.plot([0, 1], [0, 1], "k--", lw=2)
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xlabel("Tasa de falsos positivos")
-# plt.ylabel("Tasa de verdaderos positivos")
-# plt.title("Curva característica operativa del receptor (ROC)")
-# plt.legend(loc="lower right")
-# plt.show()
