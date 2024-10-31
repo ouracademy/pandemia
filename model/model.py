@@ -24,7 +24,7 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
 # from sklearn.svm import SVR
@@ -60,14 +60,12 @@ from sklearn.preprocessing import label_binarize
 # from google.colab import drive
 # drive.mount('/content/drive')
 
-df1_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepuradoEncoded.csv",sep=",")
+data = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepuradoEncoded.csv",sep=",")
 
-df1_positivos.info()
-df1_positivos
+# df1_positivos.info()
+# df1_positivos
 
-df1_positivos['Confirmed_entero'] = df1_positivos['Confirmed'].astype(int)
-
-data=df1_positivos
+data['Confirmed_entero'] = data['Confirmed'].astype(int)
 
 # Cargar un conjunto de datos de ejemplo
 # Dividir el conjunto de datos en características (X) y etiquetas (y)
@@ -245,32 +243,32 @@ fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
 roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
 
 # Graficar todas las curvas ROC
-plt.figure()
-plt.plot(
-    fpr["micro"],
-    tpr["micro"],
-    label="curva ROC micropromedio (area = {0:0.2f})".format(roc_auc["micro"]),
-    color="deeppink",
-    linestyle=":",
-    linewidth=4,
-)
+# plt.figure()
+# plt.plot(
+#     fpr["micro"],
+#     tpr["micro"],
+#     label="curva ROC micropromedio (area = {0:0.2f})".format(roc_auc["micro"]),
+#     color="deeppink",
+#     linestyle=":",
+#     linewidth=4,
+# )
 
 # Graficar curvas ROC para cada clase
-colors = ["aqua", "darkorange", "cornflowerblue"]  # Añadir más colores si es necesario.
-for i, color in zip(range(n_classes), colors):
-    plt.plot(
-        fpr[i],
-        tpr[i],
-        color=color,
-        lw=2,
-        label="Curva ROC de clase {0} (area = {1:0.2f})".format(i, roc_auc[i]),
-    )
+# colors = ["aqua", "darkorange", "cornflowerblue"]  # Añadir más colores si es necesario.
+# for i, color in zip(range(n_classes), colors):
+#     plt.plot(
+#         fpr[i],
+#         tpr[i],
+#         color=color,
+#         lw=2,
+#         label="Curva ROC de clase {0} (area = {1:0.2f})".format(i, roc_auc[i]),
+#     )
 
-plt.plot([0, 1], [0, 1], "k--", lw=2)
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel("Tasa de falsos positivos")
-plt.ylabel("Tasa de verdaderos positivos")
-plt.title("Curva característica operativa del receptor (ROC)")
-plt.legend(loc="lower right")
-plt.show()
+# plt.plot([0, 1], [0, 1], "k--", lw=2)
+# plt.xlim([0.0, 1.0])
+# plt.ylim([0.0, 1.05])
+# plt.xlabel("Tasa de falsos positivos")
+# plt.ylabel("Tasa de verdaderos positivos")
+# plt.title("Curva característica operativa del receptor (ROC)")
+# plt.legend(loc="lower right")
+# plt.show()
