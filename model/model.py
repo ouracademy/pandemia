@@ -27,24 +27,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
-from sklearn.svm import SVR
+# from sklearn.svm import SVR
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
-from sklearn.naive_bayes import MultinomialNB
+# from sklearn.naive_bayes import MultinomialNB
 # from keras.models import Sequential
 # from keras.layers import LSTM, Dense, Embedding, Conv1D, MaxPooling1D, Flatten
 # from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+# from sklearn.preprocessing import StandardScaler
 # import tensorflow as tf
 # from tensorflow import keras
 # from tensorflow.keras.layers import Input, Flatten, Dense
 # from tensorflow.keras.models import Model
-from sklearn.metrics import classification_report
-from sklearn.metrics import roc_auc_score, roc_curve, auc,accuracy_score, precision_score, recall_score, f1_score, mean_squared_error, mean_squared_error
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.metrics import classification_report
+from sklearn.metrics import roc_auc_score, roc_curve, auc,accuracy_score, precision_score, recall_score, f1_score, mean_squared_error
+from sklearn.metrics import accuracy_score #, confusion_matrix, classification_report
+# from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 # from keras.models import Sequential
@@ -57,8 +57,8 @@ from sklearn.naive_bayes import GaussianNB
 # from lime import submodular_pick
 from sklearn.preprocessing import label_binarize
 
-from google.colab import drive
-drive.mount('/content/drive')
+# from google.colab import drive
+# drive.mount('/content/drive')
 
 df1_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepuradoEncoded.csv",sep=",")
 
