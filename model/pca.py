@@ -1,12 +1,12 @@
 # La primera parte tiene por objetivo hacer un preprocesamiento de los datos para asegurarse estén limpios y en un formato adecuado para el análisis
 
 # from fim import *
-import numpy as np
+# import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
-from scipy.sparse import csr_matrix, vstack
-from sklearn.decomposition import PCA
+# from scipy.sparse import csr_matrix, vstack
+# from sklearn.decomposition import PCA
 
 df1_positivos = pd.read_csv("/content/drive/MyDrive/Tesis_Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepurado.csv", sep=',')
 
