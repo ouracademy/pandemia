@@ -12,26 +12,14 @@
 
 # !pip install https://bit.ly/3o4smsZ
 
-# pip install scikit-learn pandas numpy
-
-# pip install tensorflow
-
-# pip install keras
-
-# !pip install lime==0.2.0.1 # Instala una versión compatible de LIME
-
-# !pip install shap
-
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score, roc_curve, auc,accuracy_score, precision_score, recall_score, f1_score, mean_squared_error
-from sklearn.metrics import accuracy_score #, confusion_matrix, classification_report
+from sklearn.metrics import roc_auc_score, roc_curve, auc, accuracy_score, precision_score, recall_score, f1_score, mean_squared_error #, confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 from sklearn.naive_bayes import GaussianNB
@@ -89,11 +77,6 @@ dt_predictions = dt_model.predict(X_test)
 xgb_predictions = xgb_model.predict(X_test)
 lr_predictions = lr_model.predict(X_test)
 
-# Combina las salidas de los 7 modelos y utiliza una capa LSTM
-combined_features = np.hstack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
-                               nb_predictions.reshape(-1, 1), dt_predictions.reshape(-1, 1),
-                               xgb_predictions.reshape(-1, 1),lr_predictions.reshape(-1, 1)))
-
 #Se utiliza las salidas de los 7 algoritmos  como entrada para un clasificador SVM
 svm_input = np.column_stack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
                                nb_predictions.reshape(-1, 1), dt_predictions.reshape(-1, 1),
@@ -105,39 +88,39 @@ svm_classifier.fit(svm_input, y_test)
 svm_predictions = svm_classifier.predict(svm_input)
 
 #Obtener probabilidades predichas usando 'predict_proba'
-y_probs = svm_classifier.predict_proba(svm_input)
+# y_probs = svm_classifier.predict_proba(svm_input)
 
 # Calcular las métricas de evaluación
-auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
-precision = precision_score(y_test, svm_predictions, average='macro')
-accuracy = accuracy_score(y_test, svm_predictions)
-f1 = f1_score(y_test, svm_predictions, average='macro')
-recall = recall_score(y_test, svm_predictions,average='macro')
-mse = mean_squared_error(y_test, svm_predictions)
-rmse = mse ** 0.5
+# auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
+# precision = precision_score(y_test, svm_predictions, average='macro')
+# accuracy = accuracy_score(y_test, svm_predictions)
+# f1 = f1_score(y_test, svm_predictions, average='macro')
+# recall = recall_score(y_test, svm_predictions,average='macro')
+# mse = mean_squared_error(y_test, svm_predictions)
+# rmse = mse ** 0.5
 
 # Imprimir los resultados
-print("Métricas de evaluación:")
-print("AUC:", auc)
-print("Precision:", precision)
-print("Accuracy:", accuracy)
-print("F1 score:", f1)
-print("Recall:", recall)
-print("MSE:", mse)
-print("RMSE:", rmse)
+# print("Métricas de evaluación:")
+# print("AUC:", auc)
+# print("Precision:", precision)
+# print("Accuracy:", accuracy)
+# print("F1 score:", f1)
+# print("Recall:", recall)
+# print("MSE:", mse)
+# print("RMSE:", rmse)
 
 # Binarizar la salida
-y_test_bin = label_binarize(y_test, classes=np.unique(svm_predictions))
-n_classes = y_test_bin.shape[1]
+# y_test_bin = label_binarize(y_test, classes=np.unique(svm_predictions))
+# n_classes = y_test_bin.shape[1]
 
 # Calcular la curva ROC y el área ROC para cada clase
-fpr = dict()
-tpr = dict()
-roc_auc = dict()
-for i in range(n_classes):
-    fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_probs[:, i])
-    roc_auc[i] = auc(fpr[i], tpr[i])
+# fpr = dict()
+# tpr = dict()
+# roc_auc = dict()
+# for i in range(n_classes):
+#     fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_probs[:, i])
+#     roc_auc[i] = auc(fpr[i], tpr[i])
 
 # Calcular la curva ROC micropromedio y el área ROC
-fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
-roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+# fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
+# roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
