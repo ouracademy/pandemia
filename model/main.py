@@ -1,9 +1,11 @@
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+# from sklearn.impute import SimpleImputer
 
 from sklearn.pipeline import make_pipeline
-from sklearn.compose import ColumnTransformer
+# from sklearn.compose import ColumnTransformer
+from sklearn.decomposition import PCA
+
 
 df1_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSaudita.csv", sep=',')
 
@@ -17,19 +19,21 @@ def corregir_tested_incorrecto(v):
 tested = df1_positivos['Tested']
 corregir_tested_incorrecto(tested)
 
+columns_for_pca = ['Confirmed', 'Deaths', 'Recovered', 'Tested', 'NewAdded']
 df = df1_positivos[['RegionName_EN','Confirmed','Deaths','Recovered','Tested','NewAdded']]
+X = df[columns_for_pca]
 
-numeric_cols = df.select_dtypes(include=["float64", "int64"]).columns
-categorical_cols = df.select_dtypes(include=["object"]).columns
+n_components = 5
 
-num_pipeline = make_pipeline(StandardScaler())
+pipeline = make_pipeline(
+  StandardScaler(),
+  PCA(n_components=n_components)
+)
 
-cat_pipeline = make_pipeline(SimpleImputer(strategy="most_frequent"), OneHotEncoder())
-
-full_pipeline = ColumnTransformer([
-  ('num', num_pipeline, numeric_cols),
-  ('cat', cat_pipeline, categorical_cols)
-])
+# full_pipeline = ColumnTransformer([
+#   ('num', num_pipeline, numeric_cols),
+#   ('cat', cat_pipeline, categorical_cols)
+# ])
 
 # df_encoded = full_pipeline.fit_transform()
 
