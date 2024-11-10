@@ -5,9 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 # from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
 
-
-df1_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSaudita.csv", sep=',')
 
 def corregir_tested_incorrecto(v):
   x = 0     # promedio de tested
@@ -16,12 +15,6 @@ def corregir_tested_incorrecto(v):
     if v[i] <0:             #si la Tested es negativo
       v[i]= x
 
-tested = df1_positivos['Tested']
-corregir_tested_incorrecto(tested)
-
-columns_for_pca = ['Confirmed', 'Deaths', 'Recovered', 'Tested', 'NewAdded']
-df = df1_positivos[['RegionName_EN','Confirmed','Deaths','Recovered','Tested','NewAdded']]
-X = df[columns_for_pca]
 
 n_components = 5
 
@@ -35,7 +28,7 @@ pipeline = make_pipeline(
 #   ('cat', cat_pipeline, categorical_cols)
 # ])
 
-# df_encoded = full_pipeline.fit_transform()
+# df_encoded = pipeline.fit_transform()
 
 
 # scaler = StandardScaler()
@@ -52,3 +45,16 @@ pipeline = make_pipeline(
 #endregion 
 
 # df_encoded.to_csv("/content/drive/MyDrive/Tesis_Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepuradoEncoded.csv", sep=",")
+
+
+df1_positivos = pd.read_csv("/content/drive/MyDrive/Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSaudita.csv", sep=',')
+corregir_tested_incorrecto(df1_positivos['Tested'])
+
+df1_positivos['Confirmed'] = df1_positivos['Confirmed'].astype(int) # from hibrido.ipynb
+columns_for_pca = ['Confirmed', 'Deaths', 'Recovered', 'Tested', 'NewAdded']
+data = df1_positivos[columns_for_pca]
+
+X = data.drop('Confirmed', axis=1)
+y = data['Confirmed']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
