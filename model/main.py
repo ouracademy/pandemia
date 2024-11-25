@@ -77,8 +77,6 @@ svm_hyperparameters = {
 random_forest_hyperparameters = {
     "n_estimators": 100,
     "max_depth": 10,
-    #"min_samples_split": 2,
-    #"min_samples_leaf": 1
 }
 
 # Hiperparámetros para XGBoost
@@ -195,9 +193,9 @@ print(predictions)
 #     report_metrics(y_test, y_pred, model_name)
 
 # Combina las salidas de los 7 modelos y utiliza una capa LSTM
-combined_features = np.hstack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
-                               nb_predictions.reshape(-1, 1), dt_predictions.reshape(-1, 1),
-                               xgb_predictions.reshape(-1, 1),lr_predictions.reshape(-1, 1)))
+# combined_features = np.hstack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
+#                                nb_predictions.reshape(-1, 1), dt_predictions.reshape(-1, 1),
+#                                xgb_predictions.reshape(-1, 1),lr_predictions.reshape(-1, 1)))
 
 # lstm_model = Sequential()
 # lstm_model.add(LSTM(32, input_shape=(7, 1)))  # La entrada es la salida combinada de los 7 modelos   3
@@ -256,28 +254,28 @@ X_test_stacked = np.column_stack([predictions[model_name] for model_name in pred
 # Make predictions with rf_stacked
 y_pred_stacked = rf_stacked.predict(X_test_stacked)
 
-# Calcular las métricas de desempeño
-auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
-precision = precision_score(y_test, y_pred_stacked, average='weighted')
-accuracy = accuracy_score(y_test, y_pred_stacked)
-f1 = f1_score(y_test, y_pred_stacked, average='weighted')
-recall = recall_score(y_test, y_pred_stacked, average='weighted')
-mae = mean_absolute_error(y_test, y_pred_stacked)
-mse = mean_squared_error(y_test, y_pred_stacked)
-rmse = np.sqrt(mse)
-r2 = r2_score(y_test, y_pred_stacked)
+# # Calcular las métricas de desempeño
+# auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
+# precision = precision_score(y_test, y_pred_stacked, average='weighted')
+# accuracy = accuracy_score(y_test, y_pred_stacked)
+# f1 = f1_score(y_test, y_pred_stacked, average='weighted')
+# recall = recall_score(y_test, y_pred_stacked, average='weighted')
+# mae = mean_absolute_error(y_test, y_pred_stacked)
+# mse = mean_squared_error(y_test, y_pred_stacked)
+# rmse = np.sqrt(mse)
+# r2 = r2_score(y_test, y_pred_stacked)
 
-# Mostrar las métricas
-print("Métricas para el modelo Random Forest con predicciones apiladas:")
-print("AUC:", auc)
-print(f"Precisión: {precision:.4f}")
-print(f"Exactitud: {accuracy:.4f}")
-print(f"F1 Score: {f1:.4f}")
-print(f"Recall: {recall:.4f}")
-print(f"MAE: {mae:.4f}")
-print(f"MSE: {mse:.4f}")
-print(f"RMSE: {rmse:.4f}")
-print(f"R2 Score: {r2:.4f}")
+# # Mostrar las métricas
+# print("Métricas para el modelo Random Forest con predicciones apiladas:")
+# print("AUC:", auc)
+# print(f"Precisión: {precision:.4f}")
+# print(f"Exactitud: {accuracy:.4f}")
+# print(f"F1 Score: {f1:.4f}")
+# print(f"Recall: {recall:.4f}")
+# print(f"MAE: {mae:.4f}")
+# print(f"MSE: {mse:.4f}")
+# print(f"RMSE: {rmse:.4f}")
+# print(f"R2 Score: {r2:.4f}")
 
 # USANDO XGBOOST:Crear un conjunto de datos con las predicciones como características
 # Crear un conjunto de datos con las predicciones como características
@@ -325,35 +323,35 @@ y_pred_probs = xgboost_model.predict(dtest)  # Obtener probabilidades predichas
 y_test = y_test.astype(int)  # Convertir a array de enteros
 
 # Calcular AUC para clasificación binaria
-try:
-    auc = roc_auc_score(y_test, y_pred_probs)
-    print(f"AUC: {auc:.4f}")
-except ValueError as e:
-    print("Error al calcular AUC:", e)
+# try:
+#     auc = roc_auc_score(y_test, y_pred_probs)
+#     print(f"AUC: {auc:.4f}")
+# except ValueError as e:
+#     print("Error al calcular AUC:", e)
 
 # Calcular otras métricas
 y_pred = (y_pred_probs >= 0.5).astype(int)  # Convertir probabilidades a clases binarias
 
 
 # Calcular las métricas de desempeño
-precision = precision_score(y_test, y_pred_stacked, average='weighted')
-accuracy = accuracy_score(y_test, y_pred_stacked)
-f1 = f1_score(y_test, y_pred_stacked, average='weighted')
-recall = recall_score(y_test, y_pred_stacked, average='weighted')
-mae = mean_absolute_error(y_test, y_pred_stacked)
-mse = mean_squared_error(y_test, y_pred_stacked)
-r2 = r2_score(y_test, y_pred_stacked)
-# Mostrar las métricas
-print("Métricas para el modelo XGBoost con predicciones apiladas:")
-print("AUC:", auc)
-print(f"Precisión: {precision:.4f}")
-print(f"Exactitud: {accuracy:.4f}")
-print(f"F1 Score: {f1:.4f}")
-print(f"Recall: {recall:.4f}")
-print(f"MAE: {mae:.4f}")
-print(f"MSE: {mse:.4f}")
-print(f"RMSE: {rmse:.4f}")
-print(f"R2 Score: {r2:.4f}")
+# precision = precision_score(y_test, y_pred_stacked, average='weighted')
+# accuracy = accuracy_score(y_test, y_pred_stacked)
+# f1 = f1_score(y_test, y_pred_stacked, average='weighted')
+# recall = recall_score(y_test, y_pred_stacked, average='weighted')
+# mae = mean_absolute_error(y_test, y_pred_stacked)
+# mse = mean_squared_error(y_test, y_pred_stacked)
+# r2 = r2_score(y_test, y_pred_stacked)
+# # Mostrar las métricas
+# print("Métricas para el modelo XGBoost con predicciones apiladas:")
+# print("AUC:", auc)
+# print(f"Precisión: {precision:.4f}")
+# print(f"Exactitud: {accuracy:.4f}")
+# print(f"F1 Score: {f1:.4f}")
+# print(f"Recall: {recall:.4f}")
+# print(f"MAE: {mae:.4f}")
+# print(f"MSE: {mse:.4f}")
+# print(f"RMSE: {rmse:.4f}")
+# print(f"R2 Score: {r2:.4f}")
 
 
 
@@ -373,41 +371,41 @@ y_probs = svm_classifier.predict_proba(svm_input)
 
 
 # Calcular las métricas de evaluación
-auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
-precision = precision_score(y_test, svm_predictions, average='macro')
-accuracy = accuracy_score(y_test, svm_predictions)
-f1 = f1_score(y_test, svm_predictions, average='macro')
-recall = recall_score(y_test, svm_predictions,average='macro')
-mse = mean_squared_error(y_test, svm_predictions)
-rmse = mse ** 0.5
-r2 = r2_score(y_test, svm_predictions)
+# auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
+# precision = precision_score(y_test, svm_predictions, average='macro')
+# accuracy = accuracy_score(y_test, svm_predictions)
+# f1 = f1_score(y_test, svm_predictions, average='macro')
+# recall = recall_score(y_test, svm_predictions,average='macro')
+# mse = mean_squared_error(y_test, svm_predictions)
+# rmse = mse ** 0.5
+# r2 = r2_score(y_test, svm_predictions)
 
-# Imprimir los resultados
-print("Métricas de evaluación:")
-print("AUC:", auc)
-print("Precision:", precision)
-print("Accuracy:", accuracy)
-print("F1 score:", f1)
-print("Recall:", recall)
-print("MSE:", mse)
-print("RMSE:", rmse)
-print(f"R2 Score: {r2:.4f}")
+# # Imprimir los resultados
+# print("Métricas de evaluación:")
+# print("AUC:", auc)
+# print("Precision:", precision)
+# print("Accuracy:", accuracy)
+# print("F1 score:", f1)
+# print("Recall:", recall)
+# print("MSE:", mse)
+# print("RMSE:", rmse)
+# print(f"R2 Score: {r2:.4f}")
 
 # Binarizar la salida
-y_test_bin = label_binarize(y_test, classes=np.unique(svm_predictions))
-n_classes = y_test_bin.shape[1]
+# y_test_bin = label_binarize(y_test, classes=np.unique(svm_predictions))
+# n_classes = y_test_bin.shape[1]
 
-# Calcular la curva ROC y el área ROC para cada clase
-fpr = dict()
-tpr = dict()
-roc_auc = dict()
-for i in range(n_classes):
-    fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_probs[:, i])
-    # Use roc_auc_score instead of the variable 'auc' to calculate the AUC
-    roc_auc[i] = roc_auc_score(y_test_bin[:, i], y_probs[:, i])
+# # Calcular la curva ROC y el área ROC para cada clase
+# fpr = dict()
+# tpr = dict()
+# roc_auc = dict()
+# for i in range(n_classes):
+#     fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_probs[:, i])
+#     # Use roc_auc_score instead of the variable 'auc' to calculate the AUC
+#     roc_auc[i] = roc_auc_score(y_test_bin[:, i], y_probs[:, i])
 
-# Calcular la curva ROC micropromedio y el área ROC
-fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
-# Use roc_auc_score instead of the variable 'auc' to calculate the AUC
-roc_auc["micro"] = roc_auc_score(y_test_bin.ravel(), y_probs.ravel())
+# # Calcular la curva ROC micropromedio y el área ROC
+# fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
+# # Use roc_auc_score instead of the variable 'auc' to calculate the AUC
+# roc_auc["micro"] = roc_auc_score(y_test_bin.ravel(), y_probs.ravel())
 
