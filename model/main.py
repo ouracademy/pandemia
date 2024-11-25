@@ -217,38 +217,46 @@ combined_features = np.hstack((rf_predictions.reshape(-1, 1), svm_predictions.re
 # print(f'MSE: {mse}')
 # print(f'RMSE: {rmse}')
 
-USANDO RF:Obtener la longitud de y_train
+# USANDO RF:Obtener la longitud de y_train
 n_samples_train = len(y_train)
 
-Crea una lista vacía para almacenar las predicciones redimensionadas
+# Crea una lista vacía para almacenar las predicciones redimensionadas
 X_stacked_list = []
 
-Itera sobre las predicciones de cada modelo y redimensiona si es necesario
+# Itera sobre las predicciones de cada modelo y redimensiona si es necesario
 for model_name, predictions_array in predictions.items():
-    Si la longitud de las predicciones no coincide con la de y_train, redimensiona
+    # "XgBoost": [
+    #    [1],
+    #    [1]
+    # ],
+    # "RF": [
+    #    [0],
+    #    [1]
+    # ],
+
+    # Si la longitud de las predicciones no coincide con la de y_train, redimensiona
     if len(predictions_array) != n_samples_train:
-        Ajusta el método de redimensionamiento según sea necesario (e.g., repetir, rellenar con ceros, etc.)
-        En este ejemplo, se repite la predicción para que coincida con la longitud de y_train
+        # Ajusta el método de redimensionamiento según sea necesario (e.g., repetir, rellenar con ceros, etc.)
+        # En este ejemplo, se repite la predicción para que coincida con la longitud de y_train
         predictions_array = np.repeat(predictions_array, n_samples_train // len(predictions_array) + 1)[:n_samples_train]
 
     X_stacked_list.append(predictions_array)
 
-Apila las predicciones redimensionadas para formar X_stacked
+# Apila las predicciones redimensionadas para formar X_stacked
 X_stacked = np.column_stack(X_stacked_list)
 
-
-Entrenar un modelo Random Forest con las nuevas características
+# Entrenar un modelo Random Forest con las nuevas características
 rf_stacked = RandomForestClassifier(n_estimators=100, random_state=42)
 rf_stacked.fit(X_stacked, y_train)  # Asegúrate de que y_train sea el objetivo real
 
-Hacer nuevas predicciones con el modelo Random Forest
-Create X_test_stacked using the test set predictions
+# Hacer nuevas predicciones con el modelo Random Forest
+# Create X_test_stacked using the test set predictions
 X_test_stacked = np.column_stack([predictions[model_name] for model_name in predictions])
 
-Make predictions with rf_stacked
+# Make predictions with rf_stacked
 y_pred_stacked = rf_stacked.predict(X_test_stacked)
 
-Calcular las métricas de desempeño
+# Calcular las métricas de desempeño
 auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
 precision = precision_score(y_test, y_pred_stacked, average='weighted')
 accuracy = accuracy_score(y_test, y_pred_stacked)
@@ -259,7 +267,7 @@ mse = mean_squared_error(y_test, y_pred_stacked)
 rmse = np.sqrt(mse)
 r2 = r2_score(y_test, y_pred_stacked)
 
-Mostrar las métricas
+# Mostrar las métricas
 print("Métricas para el modelo Random Forest con predicciones apiladas:")
 print("AUC:", auc)
 print(f"Precisión: {precision:.4f}")
@@ -271,33 +279,33 @@ print(f"MSE: {mse:.4f}")
 print(f"RMSE: {rmse:.4f}")
 print(f"R2 Score: {r2:.4f}")
 
-USANDO XGBOOST:Crear un conjunto de datos con las predicciones como características
-Crear un conjunto de datos con las predicciones como características
+# USANDO XGBOOST:Crear un conjunto de datos con las predicciones como características
+# Crear un conjunto de datos con las predicciones como características
 X_stacked = np.column_stack(list(predictions.values()))
 
-Crear X_test_stacked usando las predicciones de test
+# Crear X_test_stacked usando las predicciones de test
 X_test_stacked = np.column_stack([predictions[model_name] for model_name in predictions])
 
-Asegurarte de que y_train tenga la misma longitud que las predicciones
+# Asegurarte de que y_train tenga la misma longitud que las predicciones
 if len(y_train) != len(predictions['XGBoost']):  # Utiliza RF como referencia
     y_train_sliced = y_train[:len(predictions['XGBoost'])]
 else:
     y_train_sliced = y_train  # Usa y_train original si las longitudes coinciden
 
---- Asegúrate de que y_train_sliced solo contiene 0 y 1 ---
+# --- Asegúrate de que y_train_sliced solo contiene 0 y 1 ---
 y_train_sliced = y_train_sliced[y_train_sliced.isin([0, 1])]
 
-Reset the index of y_train_sliced to start from 0
+# Reset the index of y_train_sliced to start from 0
 y_train_sliced = y_train_sliced.reset_index(drop=True)
 
-Reindex X_stacked to match y_train_sliced
+# Reindex X_stacked to match y_train_sliced
 X_stacked = X_stacked[y_train_sliced.index]
 
 
-Convertir a DMatrix de XGBoost
+# Convertir a DMatrix de XGBoost
 dtrain = xgb.DMatrix(X_stacked, label=y_train_sliced)  # Usa el y_train cortado
 
-Definir los parámetros para el modelo XGBoost
+# Definir los parámetros para el modelo XGBoost
 params = {
     'objective': 'binary:logistic',  # Para clasificación binaria
     'eval_metric': 'logloss',
@@ -306,28 +314,28 @@ params = {
     'n_estimators': 100
 }
 
-Entrenar el modelo XGBoost
+# Entrenar el modelo XGBoost
 xgboost_model = xgb.train(params, dtrain)
 
-Hacer nuevas predicciones con el modelo XGBoost
+# Hacer nuevas predicciones con el modelo XGBoost
 dtest = xgb.DMatrix(X_test_stacked)
 y_pred_probs = xgboost_model.predict(dtest)  # Obtener probabilidades predichas
 
-Asegúrate de que y_test sea un array de enteros
+# Asegúrate de que y_test sea un array de enteros
 y_test = y_test.astype(int)  # Convertir a array de enteros
 
-Calcular AUC para clasificación binaria
+# Calcular AUC para clasificación binaria
 try:
     auc = roc_auc_score(y_test, y_pred_probs)
     print(f"AUC: {auc:.4f}")
 except ValueError as e:
     print("Error al calcular AUC:", e)
 
-Calcular otras métricas
+# Calcular otras métricas
 y_pred = (y_pred_probs >= 0.5).astype(int)  # Convertir probabilidades a clases binarias
 
 
-Calcular las métricas de desempeño
+# Calcular las métricas de desempeño
 precision = precision_score(y_test, y_pred_stacked, average='weighted')
 accuracy = accuracy_score(y_test, y_pred_stacked)
 f1 = f1_score(y_test, y_pred_stacked, average='weighted')
@@ -349,22 +357,22 @@ print(f"R2 Score: {r2:.4f}")
 
 
 
-Se utiliza las salidas de los 7 algoritmos  como entrada para un clasificador SVM
+# Se utiliza las salidas de los 7 algoritmos  como entrada para un clasificador SVM
 svm_input = np.column_stack((rf_predictions.reshape(-1, 1), svm_predictions.reshape(-1, 1), gbm_predictions.reshape(-1, 1),
                                nb_predictions.reshape(-1, 1), dt_predictions.reshape(-1, 1),
                                xgb_predictions.reshape(-1, 1),lr_predictions.reshape(-1, 1)))
 svm_classifier = SVC(kernel='linear', probability=True)  # Se puedes ajustar el kernel de  acuerdo a lo que se requiere
 svm_classifier.fit(svm_input, y_test)
 
-Hacer predicciones con el clasificador SVM
+# Hacer predicciones con el clasificador SVM
 svm_predictions = svm_classifier.predict(svm_input)
 
-Obtener probabilidades predichas usando 'predict_proba'
+# Obtener probabilidades predichas usando 'predict_proba'
 y_probs = svm_classifier.predict_proba(svm_input)
 
 
 
-Calcular las métricas de evaluación
+# Calcular las métricas de evaluación
 auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
 precision = precision_score(y_test, svm_predictions, average='macro')
 accuracy = accuracy_score(y_test, svm_predictions)
@@ -374,7 +382,7 @@ mse = mean_squared_error(y_test, svm_predictions)
 rmse = mse ** 0.5
 r2 = r2_score(y_test, svm_predictions)
 
-Imprimir los resultados
+# Imprimir los resultados
 print("Métricas de evaluación:")
 print("AUC:", auc)
 print("Precision:", precision)
@@ -385,11 +393,11 @@ print("MSE:", mse)
 print("RMSE:", rmse)
 print(f"R2 Score: {r2:.4f}")
 
-Binarizar la salida
+# Binarizar la salida
 y_test_bin = label_binarize(y_test, classes=np.unique(svm_predictions))
 n_classes = y_test_bin.shape[1]
 
-Calcular la curva ROC y el área ROC para cada clase
+# Calcular la curva ROC y el área ROC para cada clase
 fpr = dict()
 tpr = dict()
 roc_auc = dict()
@@ -398,8 +406,8 @@ for i in range(n_classes):
     # Use roc_auc_score instead of the variable 'auc' to calculate the AUC
     roc_auc[i] = roc_auc_score(y_test_bin[:, i], y_probs[:, i])
 
-Calcular la curva ROC micropromedio y el área ROC
+# Calcular la curva ROC micropromedio y el área ROC
 fpr["micro"], tpr["micro"], _ = roc_curve(y_test_bin.ravel(), y_probs.ravel())
-Use roc_auc_score instead of the variable 'auc' to calculate the AUC
+# Use roc_auc_score instead of the variable 'auc' to calculate the AUC
 roc_auc["micro"] = roc_auc_score(y_test_bin.ravel(), y_probs.ravel())
 
