@@ -2,5 +2,5 @@ streamlit==1.39.0
 pandas==2.0.3
 # https://bit.ly/3o4smsZ => fim
 
-scikit-learn
-numpy
+# scikit-learn
+numpy==1.24.4
