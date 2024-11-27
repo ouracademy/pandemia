@@ -12,10 +12,10 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 
-import numpy as np
+# import numpy as np
 # import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
-
+import joblib
 
 # def corregir_tested_incorrecto(v):
 #   x = 0     # promedio de tested
@@ -97,13 +97,13 @@ pipeline = make_pipeline(
 # df_encoded.to_csv("/content/drive/MyDrive/Tesis_Desarrollo/DataPorPais/daily_cases_ksa_covid19ArabiaSauditaDepuradoEncoded.csv", sep=",")
 
 
-df1_positivos = pd.read_csv("daily_cases_ksa.csv", sep=',')
+df = pd.read_csv("daily_cases_ksa.csv", sep=',')
 promedio_tested = 0
-df1_positivos['Tested'] = df1_positivos['Tested'].where(df1_positivos['Tested'] >= 0, promedio_tested)
-df1_positivos['Confirmed'] = df1_positivos['Confirmed'].astype(int) # from hibrido.ipynb
-df1_positivos['Confirmed'] = df1_positivos['Confirmed'].where(df1_positivos['Confirmed'] <= 0, 1) # TODO: evaluate this
+df['Tested'] = df['Tested'].where(df['Tested'] >= 0, promedio_tested)
+df['Confirmed'] = df['Confirmed'].astype(int) # from hibrido.ipynb
+df['Confirmed'] = df['Confirmed'].where(df['Confirmed'] <= 0, 1) # TODO: evaluate this
 columns_for_pca = ['Confirmed', 'Deaths', 'Recovered', 'Tested', 'NewAdded']
-data = df1_positivos[columns_for_pca]
+data = df[columns_for_pca]
 
 X = data.drop('Confirmed', axis=1)
 y = data['Confirmed']
@@ -112,6 +112,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 print("fit")
 pipeline.fit(X_train, y_train)
+joblib.dump(pipeline, "model.joblib")
 
 print("predict")
 y_test_pred = pipeline.predict(X_test)

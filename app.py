@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import joblib
 
 st.title("Modelo para pandemia COVID 19")
 
@@ -15,16 +16,18 @@ with st.sidebar:
 
 uploaded_file = st.file_uploader("Selecciona un archivo", type="csv")
 if uploaded_file is not None:
-  dataframe = pd.read_csv(uploaded_file)
+  df = pd.read_csv(uploaded_file)
   st.write("Una muestra de lo subido:")
-  st.write(dataframe.sample(5))
-  st.write(f"Número de filas: {len(dataframe)}")
+  st.write(df.sample(5))
+  st.write(f"Número de filas: {len(df)}")
   
 
-  # model = joblib.load('model.joblib')
-  # pred = model.predict_proba(df)
-  # pred = pd.DataFrame(pred, columns = ['setosa_probability', 'versicolor_probability', 'virginica_probability'])
-  pred = dataframe # TODO: delete this
+  model = joblib.load('model.joblib')
+  promedio_tested = 0
+  df['Tested'] = df['Tested'].where(df['Tested'] >= 0, promedio_tested)
+
+  pred = model.predict(df)
+  pred = pd.DataFrame(pred, columns = ['ok'])
   st.header('Valores predecidos')
   st.write(pred.head())
   pred = pred.to_csv(index=False).encode('utf-8')
