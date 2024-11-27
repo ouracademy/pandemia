@@ -17,12 +17,12 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 
-def corregir_tested_incorrecto(v):
-  x = 0     # promedio de tested
+# def corregir_tested_incorrecto(v):
+#   x = 0     # promedio de tested
 
-  for i in range (0, len(v)):
-    if v[i] <0:             #si la Tested es negativo
-      v[i]= x
+#   for i in range (0, len(v)):
+#     if v[i] <0:             #si la Tested es negativo
+#       v[i]= x
 
 
 # TODO: check
@@ -73,6 +73,7 @@ estimators = [
 pipeline = make_pipeline(
   StandardScaler(),
 #   PCA(n_components=n_components),
+    # RandomForestClassifier(**random_forest_hyperparameters)
   StackingClassifier(estimators=estimators, final_estimator=SVC(kernel='linear', probability=True))
 )
 
@@ -97,9 +98,10 @@ pipeline = make_pipeline(
 
 
 df1_positivos = pd.read_csv("daily_cases_ksa.csv", sep=',')
-corregir_tested_incorrecto(df1_positivos['Tested'])
-
+promedio_tested = 0
+df1_positivos['Tested'] = df1_positivos['Tested'].where(df1_positivos['Tested'] >= 0, promedio_tested)
 df1_positivos['Confirmed'] = df1_positivos['Confirmed'].astype(int) # from hibrido.ipynb
+df1_positivos['Confirmed'] = df1_positivos['Confirmed'].where(df1_positivos['Confirmed'] <= 0, 1) # TODO: evaluate this
 columns_for_pca = ['Confirmed', 'Deaths', 'Recovered', 'Tested', 'NewAdded']
 data = df1_positivos[columns_for_pca]
 
@@ -107,9 +109,11 @@ X = data.drop('Confirmed', axis=1)
 y = data['Confirmed']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+
+print("fit")
 pipeline.fit(X_train, y_train)
 
-# Hacer predicciones con el clasificador SVM
+print("predict")
 y_test_pred = pipeline.predict(X_test)
 
 # Obtener probabilidades predichas usando 'predict_proba'
