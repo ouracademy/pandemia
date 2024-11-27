@@ -26,7 +26,7 @@ if uploaded_file is not None:
   promedio_tested = 0
   df['Tested'] = df['Tested'].where(df['Tested'] >= 0, promedio_tested)
 
-  pred = model.predict(df)
+  pred = model.predict(df[['Deaths', 'Recovered', 'Tested', 'NewAdded']])
   pred = pd.DataFrame(pred, columns = ['ok'])
   st.header('Valores predecidos')
   st.write(pred.head())
